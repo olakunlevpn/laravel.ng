@@ -20,12 +20,18 @@ class EnvatoPurchaseService
         $envatoPurchase = EnvatoPurchase::firstOrNew(['item_id' => $apiData['item_id']]);
 
         if (!is_null($envatoPurchase->domain)) {
-            return ['message' => 'This license is already used and installed.'];
+            return [
+                'status' => 'error',
+                'message' => 'This license is already used and installed.'
+            ];
         }
 
         $envatoPurchase->fill($apiData)->save();
 
-        return ['message' => 'Valid'];
+        return [
+            'status' => 'success',
+            'message' => 'Valid'
+        ];
     }
 
     /**

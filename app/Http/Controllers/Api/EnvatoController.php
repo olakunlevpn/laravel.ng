@@ -27,7 +27,7 @@ class EnvatoController extends Controller
             $response = $this->envatoPurchaseService->processPurchase($saleInformation, $request->validatedDomain());
             return response()->json($response, 200);
         } catch (EnvatoApiException $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
 
