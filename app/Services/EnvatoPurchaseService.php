@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\EnvatoPurchase;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 
 class EnvatoPurchaseService
@@ -12,26 +13,28 @@ class EnvatoPurchaseService
      *
      * @param array $saleInformation
      * @param string|null $domain
-     * @return array
+     * @return JsonResponse
      */
-    public function processPurchase(array $saleInformation, string|null $domain): array
+    public function processPurchase(array $saleInformation, string|null $domain): JsonResponse
     {
         $apiData = $this->transformSaleInformation($saleInformation, $domain);
         $envatoPurchase = EnvatoPurchase::firstOrNew(['item_id' => $apiData['item_id']]);
 
         if (!is_null($envatoPurchase->domain)) {
-            return [
+            return response()->json([
                 'status' => 'error',
                 'message' => 'This license is already used and installed.'
-            ];
+            ],422);
+
         }
 
         $envatoPurchase->fill($apiData)->save();
 
-        return [
+        return response()->json([
             'status' => 'success',
             'message' => 'Valid'
-        ];
+        ],204);
+
     }
 
     /**

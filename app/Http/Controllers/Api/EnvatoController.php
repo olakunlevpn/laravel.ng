@@ -20,14 +20,22 @@ class EnvatoController extends Controller
         $this->envatoPurchaseService = $envatoPurchaseService;
     }
 
-    public function checkPurchaseCode(EnvatoPurchaseRequest $request, $purchaseCode): JsonResponse
+    public function checkLicense(EnvatoPurchaseRequest $request): JsonResponse
     {
+
+        $validated = $request->validated();
+
         try {
-            $saleInformation = $this->envatoApiService->getSaleInformation($purchaseCode);
-            $response = $this->envatoPurchaseService->processPurchase($saleInformation, $request->validatedDomain());
-            return response()->json($response, 200);
+
+            $saleInformation = $this->envatoApiService->getSaleInformation($validated['key']);
+            return $this->envatoPurchaseService->processPurchase(
+                $saleInformation,
+                $request->validatedDomain($validated['url']
+                )
+            );
+
         } catch (EnvatoApiException $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
         }
     }
 

@@ -19,4 +19,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('envato/verify/{purchaseCode}', [EnvatoController::class, 'checkPurchaseCode']);
+Route::post('license-check', [EnvatoController::class, 'checkLicense']);

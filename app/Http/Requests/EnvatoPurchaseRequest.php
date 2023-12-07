@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Services\EnvatoApiService;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
+
+
 class EnvatoPurchaseRequest extends FormRequest
 {
     protected EnvatoApiService $envatoApiService;
@@ -31,20 +35,51 @@ class EnvatoPurchaseRequest extends FormRequest
     public function rules()
     {
         return [
-            // Define other validation rules as needed.
+            'url' => 'required|url',
+            'key' => 'required|regex:/^([a-f0-9]{8})-(([a-f0-9]{4})-){3}([a-f0-9]{12})$/i',
         ];
     }
+
+    public function failedValidation(Validator $validator)
+
+    {
+
+        throw new HttpResponseException(response()->json([
+
+            'status'   => 'error',
+
+            'message'   => 'The license key provided is invalid'
+
+        ], 422));
+
+    }
+
+
+
+    public function messages()
+
+    {
+
+        return [
+
+            'url.required' => 'The server domain is required',
+            'key.required' => 'The license key is required',
+            'key.regex' => 'The license key provided is invalid',
+
+        ];
+
+    }
+
+
 
     /**
      * Validate the domain and ensure it's a production domain.
      *
      * @return string|null
      */
-    public function validatedDomain(): ?string
+    public function validatedDomain($domain): ?string
     {
-        $domain = $this->getHost();
-
-        if ($this->envatoApiService->isValidDomain($domain)) {
+        if (!$this->envatoApiService->isValidDomain($domain)) {
             return $domain;
         }
 

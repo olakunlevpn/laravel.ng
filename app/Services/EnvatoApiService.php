@@ -4,9 +4,8 @@ namespace App\Services;
 
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Client\Response;
 use App\Exceptions\Api\EnvatoApiException;
-
+use Illuminate\Support\Str;
 
 class EnvatoApiService
 {
@@ -59,11 +58,45 @@ class EnvatoApiService
 
     public function isValidDomain($domain): bool
     {
-        if (in_array($domain, ['localhost', '127.0.0.1']) || str_ends_with($domain, '.test')) {
-            return false;
+        $allowedDomains = collect([
+            'localhost',
+            '127.0.0.1',
+        ]);
+
+        $allowedExtensions = collect([
+            '.test',
+            '.example',
+            '.invalid',
+            '.localhost',
+            '.local',
+        ]);
+
+        $allowedPrefixes = collect([
+            'staging.',
+            'stage.',
+            'test.',
+            'testing.',
+            'dev.',
+            'development.',
+        ]);
+
+        if ($allowedDomains->containsStrict($domain)) {
+            return true;
         }
 
-        return true;
+        if ($allowedExtensions->contains(function ($extension) use ($domain) {
+            return Str::endsWith($domain, $extension);
+        })) {
+            return true;
+        }
+
+        if ($allowedPrefixes->contains(function ($prefix) use ($domain) {
+            return Str::startsWith($domain, $prefix);
+        })) {
+            return true;
+        }
+
+        return false;
     }
 
 }

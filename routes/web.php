@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\EnvatoApiService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
