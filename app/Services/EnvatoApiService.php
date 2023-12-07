@@ -71,14 +71,6 @@ class EnvatoApiService
             '.local',
         ]);
 
-        $allowedPrefixes = collect([
-            'staging.',
-            'stage.',
-            'test.',
-            'testing.',
-            'dev.',
-            'development.',
-        ]);
 
         if ($allowedDomains->containsStrict($domain)) {
             return true;
@@ -90,11 +82,6 @@ class EnvatoApiService
             return true;
         }
 
-        if ($allowedPrefixes->contains(function ($prefix) use ($domain) {
-            return Str::startsWith($domain, $prefix);
-        })) {
-            return true;
-        }
 
         return false;
     }
