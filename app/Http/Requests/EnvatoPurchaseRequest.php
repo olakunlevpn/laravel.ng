@@ -48,7 +48,7 @@ class EnvatoPurchaseRequest extends FormRequest
 
             'status'   => 'error',
 
-            'message'   => 'The license key provided is invalid'
+            'message'   => $validator->errors()
 
         ], 422));
 
