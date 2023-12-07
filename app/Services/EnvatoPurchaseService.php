@@ -13,19 +13,19 @@ class EnvatoPurchaseService
      *
      * @param array $saleInformation
      * @param string|null $domain
+     * @param string $code
      * @return JsonResponse
      */
-    public function processPurchase(array $saleInformation, string|null $domain): JsonResponse
+    public function processPurchase(array $saleInformation, string $code, string|null $domain): JsonResponse
     {
-        $apiData = $this->transformSaleInformation($saleInformation, $domain);
-        $envatoPurchase = EnvatoPurchase::firstOrNew(['item_id' => $apiData['item_id']]);
+        $apiData = $this->transformSaleInformation($saleInformation, $code, $domain);
+        $envatoPurchase = EnvatoPurchase::firstOrNew(['purchase_code' => $code]);
 
-        if (!is_null($envatoPurchase->domain)) {
+        if (!is_null($envatoPurchase->domain) && $envatoPurchase->domain != $domain) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'This license is already used and installed.'
             ],422);
-
         }
 
         $envatoPurchase->fill($apiData)->save();
@@ -41,10 +41,11 @@ class EnvatoPurchaseService
      * Transform the sale information into the required format.
      *
      * @param array $saleInformation
+     * @param string $code
      * @param string|null $domain
      * @return array
      */
-    private function transformSaleInformation(array $saleInformation, string|null $domain): array
+    private function transformSaleInformation(array $saleInformation, string $code, string|null $domain): array
     {
         return [
             'verified_at' => Carbon::now(),
@@ -59,6 +60,7 @@ class EnvatoPurchaseService
             'item_site' => $saleInformation['item']['site'],
             'price_cents' => $saleInformation['item']['price_cents'],
             'buyer' => $saleInformation['buyer'],
+            'purchase_code' => $code,
             'domain' => $domain
         ];
     }

@@ -26,10 +26,11 @@ class EnvatoController extends Controller
         $validated = $request->validated();
 
         try {
-
-            $saleInformation = $this->envatoApiService->getSaleInformation($validated['key']);
+           $purchase_code = $validated['key'];
+            $saleInformation = $this->envatoApiService->getSaleInformation($purchase_code);
             return $this->envatoPurchaseService->processPurchase(
                 $saleInformation,
+                $purchase_code,
                 $request->validatedDomain($validated['url']
                 )
             );

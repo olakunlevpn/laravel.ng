@@ -12,7 +12,7 @@ class EnvatoPurchase extends Model
     protected $fillable = [
         'domain', 'verified_at', 'amount', 'sold_at', 'license',
         'support_amount', 'supported_until', 'item_id', 'item_name',
-        'item_updated_at', 'item_site', 'price_cents', 'buyer'
+        'item_updated_at', 'item_site', 'price_cents', 'buyer','purchase_code'
     ];
 
 
