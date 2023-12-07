@@ -32,7 +32,7 @@ class EnvatoPurchaseService
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Valid'
+            'message' => 'Your license is valid'
         ],204);
 
     }
