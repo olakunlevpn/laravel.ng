@@ -25,6 +25,8 @@ class EnvatoController extends Controller
 
         $validated = $request->validated();
 
+        $this->checkMasterKey($validated);
+
         try {
            $purchase_code = $validated['key'];
             $saleInformation = $this->envatoApiService->getSaleInformation($purchase_code);
@@ -37,6 +39,16 @@ class EnvatoController extends Controller
 
         } catch (EnvatoApiException $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
+        }
+    }
+
+    private function checkMasterKey(mixed $validated)
+    {
+        if(in_array($validated['key'], config('envato.master_key'))){
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Your license is valid'
+            ],204);
         }
     }
 
