@@ -25,7 +25,12 @@ class EnvatoController extends Controller
 
         $validated = $request->validated();
 
-        $this->checkMasterKey($validated);
+        if($this->checkMasterKey($validated)){
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Your license is valid'
+            ],204);
+        }
 
         try {
            $purchase_code = $validated['key'];
@@ -44,12 +49,8 @@ class EnvatoController extends Controller
 
     private function checkMasterKey(mixed $validated)
     {
-        if(in_array($validated['key'], config('envato.master_key'))){
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Your license is valid'
-            ],204);
-        }
+        return in_array($validated['key'], config('envato.master_key'));
+
     }
 
 }
